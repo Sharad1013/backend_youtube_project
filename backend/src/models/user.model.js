@@ -56,7 +56,10 @@ userSchema.pre(
 
 // Custom Methods
 userSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password)
+    if (!password) throw new Error("Password is required");
+    if (!this.password) throw new Error("Stored password is missing");
+    const isValid = await bcrypt.compare(password.toString(), this.password.toString());
+    return isValid;
 }
 
 userSchema.methods.generateAccessToken = async function () {
